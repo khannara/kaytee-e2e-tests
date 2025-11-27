@@ -1,8 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from .env.local (preferred) or .env
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config(); // Fallback to .env
 
 /**
  * Centralized Playwright configuration for KayTee Ecosystem E2E tests.
@@ -56,12 +58,13 @@ export default defineConfig({
   /* Configure projects for different ecosystem apps */
   projects: [
     // KayTee Tropical Dashboard - Business finance management
+    // Uses dev environment by default for safer E2E testing
     {
       name: 'kaytee-tropical',
       testDir: './apps/kaytee-tropical/tests',
       use: {
         ...devices['Desktop Chrome'],
-        baseURL: process.env.KAYTEE_TROPICAL_URL || 'https://kayteetropical.com',
+        baseURL: process.env.KAYTEE_TROPICAL_URL || 'https://dev.kayteetropical.com',
       },
     },
 
