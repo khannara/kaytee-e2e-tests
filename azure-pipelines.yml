@@ -42,7 +42,7 @@ variables:
   - name: PORTFOLIO_URL
     value: 'https://khannara.dev'
   - name: KAYTEE_HUB_URL
-    value: 'https://hub.kayteetropical.com'
+    value: 'https://hub.khannara.dev'
   # Metrics API for reporting results
   - name: METRICS_API_URL
     value: 'https://api.khannara.dev'
