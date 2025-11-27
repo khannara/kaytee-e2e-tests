@@ -31,14 +31,21 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  NODE_VERSION: '20.x'
+  - group: kaytee-e2e-tests-vars
+  - name: NODE_VERSION
+    value: '20.x'
   # Application URLs (production)
-  KAYTEE_TROPICAL_URL: 'https://kayteetropical.com'
-  QUALITY_METRICS_URL: 'https://qa.khannara.dev'
-  PORTFOLIO_URL: 'https://khannara.dev'
-  KAYTEE_HUB_URL: 'https://hub.kayteetropical.com'
+  - name: KAYTEE_TROPICAL_URL
+    value: 'https://kayteetropical.com'
+  - name: QUALITY_METRICS_URL
+    value: 'https://qa.khannara.dev'
+  - name: PORTFOLIO_URL
+    value: 'https://khannara.dev'
+  - name: KAYTEE_HUB_URL
+    value: 'https://hub.kayteetropical.com'
   # Metrics API for reporting results
-  METRICS_API_URL: 'https://api.khannara.dev'
+  - name: METRICS_API_URL
+    value: 'https://api.khannara.dev'
 
 stages:
   - stage: E2E_Tests
