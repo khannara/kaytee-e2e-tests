@@ -31,7 +31,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: kaytee-e2e-tests-vars
+  - group: kaytee-ecosystem-secrets
   - name: NODE_VERSION
     value: '20.x'
   # Application URLs (production)
