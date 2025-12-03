@@ -10,19 +10,18 @@ import type {
 interface TestResultPayload {
   project: string;
   test_type: 'e2e';
-  status: 'passed' | 'failed' | 'skipped';
   total_tests: number;
-  passed_tests: number;
-  failed_tests: number;
-  skipped_tests: number;
+  passed: number;
+  failed: number;
+  skipped: number;
   duration_ms: number;
-  metadata: {
+  commit_sha?: string;
+  branch?: string;
+  trigger: 'manual' | 'scheduled' | 'ci';
+  metadata?: {
     browser: string;
     playwright_version: string;
     node_version: string;
-    ci: boolean;
-    commit_sha?: string;
-    branch?: string;
     run_id?: string;
     failed_test_names?: string[];
   };
@@ -58,19 +57,18 @@ class MetricsApiReporter implements Reporter {
       this.results.set(projectName, {
         project: projectName,
         test_type: 'e2e',
-        status: 'passed',
         total_tests: 0,
-        passed_tests: 0,
-        failed_tests: 0,
-        skipped_tests: 0,
+        passed: 0,
+        failed: 0,
+        skipped: 0,
         duration_ms: 0,
+        commit_sha: process.env.BUILD_SOURCEVERSION || process.env.GITHUB_SHA,
+        branch: process.env.BUILD_SOURCEBRANCH || process.env.GITHUB_REF,
+        trigger: process.env.CI ? 'ci' : 'manual',
         metadata: {
           browser: test.parent.project()?.use?.defaultBrowserType || 'chromium',
           playwright_version: require('@playwright/test/package.json').version as string,
           node_version: process.version,
-          ci: !!process.env.CI,
-          commit_sha: process.env.BUILD_SOURCEVERSION || process.env.GITHUB_SHA,
-          branch: process.env.BUILD_SOURCEBRANCH || process.env.GITHUB_REF,
           run_id: process.env.BUILD_BUILDID || process.env.GITHUB_RUN_ID,
           failed_test_names: [],
         },
@@ -83,16 +81,15 @@ class MetricsApiReporter implements Reporter {
 
     switch (result.status) {
       case 'passed':
-        projectResult.passed_tests++;
+        projectResult.passed++;
         break;
       case 'failed':
       case 'timedOut':
-        projectResult.failed_tests++;
-        projectResult.status = 'failed';
-        projectResult.metadata.failed_test_names?.push(test.title);
+        projectResult.failed++;
+        projectResult.metadata?.failed_test_names?.push(test.title);
         break;
       case 'skipped':
-        projectResult.skipped_tests++;
+        projectResult.skipped++;
         break;
     }
   }
