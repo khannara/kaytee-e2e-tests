@@ -4,6 +4,7 @@
   "description": "Centralized E2E testing repository for the KayTee ecosystem",
   "private": true,
   "scripts": {
+    "env:generate": "node scripts/generate-env.mjs",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
