@@ -218,3 +218,42 @@ stages:
               echo "Build: $(Build.BuildNumber)"
               echo "Branch: $(Build.SourceBranchName)"
             displayName: 'Print summary'
+
+  - stage: Notify
+    displayName: 'Discord Notification'
+    dependsOn:
+      - E2E_Tests
+      - Report
+    condition: always()
+    jobs:
+      - job: NotifyDiscord
+        displayName: 'Send Discord Notification'
+        variables:
+          testStatus: $[stageDependencies.E2E_Tests.QualityMetrics.result]
+        steps:
+          - script: |
+              # Determine overall status from all test jobs
+              QM_STATUS="${{ stageDependencies.E2E_Tests.QualityMetrics.result }}"
+              DP_STATUS="${{ stageDependencies.E2E_Tests.DigitalPortfolio.result }}"
+              KT_STATUS="${{ stageDependencies.E2E_Tests.KayTeeTropical.result }}"
+
+              # Default to success, check for failures
+              OVERALL="Succeeded"
+              if [ "$QM_STATUS" = "Failed" ] || [ "$DP_STATUS" = "Failed" ] || [ "$KT_STATUS" = "Failed" ]; then
+                OVERALL="Failed"
+              fi
+
+              if [ "$OVERALL" = "Succeeded" ]; then
+                COLOR=3066993
+                EMOJI="✅"
+              else
+                COLOR=15158332
+                EMOJI="❌"
+              fi
+
+              curl -s -X POST -H "Content-Type: application/json" \
+                -d "{\"embeds\":[{\"title\":\"$EMOJI E2E Test Suite\",\"description\":\"Weekly E2E Tests $OVERALL\",\"color\":$COLOR,\"fields\":[{\"name\":\"Quality Metrics\",\"value\":\"$QM_STATUS\",\"inline\":true},{\"name\":\"Portfolio\",\"value\":\"$DP_STATUS\",\"inline\":true},{\"name\":\"KayTee Tropical\",\"value\":\"$KT_STATUS\",\"inline\":true},{\"name\":\"Branch\",\"value\":\"\`$(Build.SourceBranchName)\`\",\"inline\":true},{\"name\":\"Pipeline\",\"value\":\"[View Results]($(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId))\",\"inline\":false}],\"footer\":{\"text\":\"Azure DevOps E2E Tests\"}}]}" \
+                "$(DISCORD_WEBHOOK_TESTS)"
+            displayName: 'Post to Discord #tests'
+            env:
+              DISCORD_WEBHOOK_TESTS: $(DISCORD_WEBHOOK_TESTS)
