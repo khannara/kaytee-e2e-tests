@@ -52,7 +52,7 @@ export class HubPage extends BasePage {
     this.infrastructureLink = page.locator('a[href="/dashboard/infrastructure"]');
     this.logsLink = page.locator('a[href="/dashboard/logs"]');
     this.deploymentsLink = page.locator('a[href="/dashboard/deployments"]');
-    this.pipelinesLink = page.locator('a[href="/dashboard/pipelines"]');
+    this.pipelinesLink = page.locator('aside a[href="/dashboard/pipelines"]').first();
     this.settingsLink = page.locator('a[href="/dashboard/settings"]');
 
     // Content
