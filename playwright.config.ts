@@ -94,7 +94,7 @@ export default defineConfig({
       testDir: './apps/kaytee-hub/tests',
       use: {
         ...devices['Desktop Chrome'],
-        baseURL: process.env.KAYTEE_HUB_URL || 'https://hub.kayteetropical.com',
+        baseURL: process.env.KAYTEE_HUB_URL || 'https://hub.khannara.dev',
       },
     },
 
